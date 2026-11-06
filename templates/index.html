@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamic Calculator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calculator {
+            width: 100%;
+            max-width: 550px;
+            padding: 35px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .profile {
+            margin-bottom: 25px;
+        }
+
+        .emoji {
+            font-size: 45px;
+        }
+
+        .profile h3 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .profile p {
+            color: #777;
+            font-size: 14px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #dynamicInputs {
+            margin-top: 25px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 110px;
+            gap: 12px;
+            align-items: end;
+            margin-bottom: 15px;
+        }
+
+        .input-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .result {
+            background: #e8f7ed;
+            color: #168344;
+            padding: 18px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .result h3 {
+            font-size: 26px;
+            margin-bottom: 0;
+        }
+
+        .error {
+            background: #fff0f0;
+            color: #c62828;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        @media(max-width: 400px) {
+            .input-row {
+                grid-template-columns: 1fr 95px;
+            }
+
+            .calculator {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+    <div class="profile">
+        <div class="emoji">👩‍💻</div>
+        <h3>Vennela Dhibba </h3>
+        <p>📧 Email: venneladhibba@gmail.com</p>
+    </div>
+
+    <h2>🧮 Calculator</h2>
+
+    <div class="form-group">
+        <label>Enter Number of Values</label>
+
+        <input
+            type="number"
+            id="count"
+            min="2"
+            max="20"
+            placeholder="How many values?"
+        >
+
+        <button type="button" onclick="generateInputs()">
+            Generate Inputs
+        </button>
+    </div>
+
+    <form action="/" method="POST">
+
+        <div id="dynamicInputs"></div>
+
+        <div id="submitSection" style="display:none;">
+            <button type="submit">Calculate Result</button>
+        </div>
+
+    </form>
+
+    {% if result is not none %}
+    <div class="result">
+        <p>Calculation Result</p>
+        <h3>{{ result }}</h3>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error">
+        {{ error }}
+    </div>
+    {% endif %}
+
+</div>
+
+
+<script>
+
+function generateInputs() {
+
+    let count = parseInt(document.getElementById("count").value);
+
+    let container = document.getElementById("dynamicInputs");
+
+    let submitSection = document.getElementById("submitSection");
+
+    container.innerHTML = "";
+
+    submitSection.style.display = "none";
+
+    if (isNaN(count) || count < 2 || count > 20) {
+        alert("Enter values between 2 and 20");
+        return;
+    }
+
+    for (let i = 1; i <= count; i++) {
+
+        let row = document.createElement("div");
+
+        row.className = "input-row";
+
+        let valueDiv = document.createElement("div");
+
+        valueDiv.innerHTML = `
+            <label>Value ${i}</label>
+            <input
+                type="number"
+                step="any"
+                name="values"
+                placeholder="Enter value ${i}"
+                required
+            >
+        `;
+
+        row.appendChild(valueDiv);
+
+        // Generate operator after each value except the last one
+
+        if (i < count) {
+
+            let operatorDiv = document.createElement("div");
+
+            operatorDiv.innerHTML = `
+                <label>Operator ${i}</label>
+
+                <select name="operators" required>
+                    <option value="">Select</option>
+                    <option value="+">+</option>
+                    <option value="-">-</option>
+                    <option value="*">*</option>
+                    <option value="/">/</option>
+                    <option value="%">%</option>
+                </select>
+            `;
+
+            row.appendChild(operatorDiv);
+
+        } else {
+
+            row.classList.add("single");
+
+        }
+
+        container.appendChild(row);
+    }
+
+    submitSection.style.display = "block";
+
+}
+
+</script>
+
+</body>
+</html>
